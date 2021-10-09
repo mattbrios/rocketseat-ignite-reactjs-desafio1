@@ -13,17 +13,36 @@ interface Task {
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const inputTask =  document.getElementById("input-task");
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if ( newTaskTitle ) {
+      const newTask = {
+        id: Math.ceil(Math.random() * 1000),
+        title: newTaskTitle,
+        isComplete: false,
+      }
+      setTasks( [...tasks, newTask] );
+      setNewTaskTitle('');
+      inputTask?.focus();
+    }
   }
 
-  function handleToggleTaskCompletion(id: number) {
+  function handleToggleTaskCompletion(id: number) {    
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const newListTasks = tasks.map( task => task.id == id ? {
+      ...task,
+      isComplete: !task.isComplete
+    } : task );
+
+    setTasks(newListTasks);
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const tasksFiltered = tasks.filter( task => task.id !== id );
+    setTasks(tasksFiltered);
   }
 
   return (
@@ -33,6 +52,7 @@ export function TaskList() {
 
         <div className="input-group">
           <input 
+            id="input-task"
             type="text" 
             placeholder="Adicionar novo todo" 
             onChange={(e) => setNewTaskTitle(e.target.value)}
